@@ -17,19 +17,16 @@ export function useSync(state: AppState) {
 
       const user = state.currentUser;
       const isOrganizer = user.role === UserRole.ORGANIZER || user.role === UserRole.ADMIN;
-      const isManager   = user.role === UserRole.TEAM_MANAGER;
-      const userId      = user.id;
-      const orgId       = isOrganizer ? userId : user.organizadorId;
+      const userId = user.id;
 
       // Sempre sincronizar o próprio usuário
       await syncToSupabase('usuarios', [user]);
 
-      // Perfil do usuário
+      // Perfil
       const myProfile = state.playerProfiles.filter(p => p.userId === userId);
       if (myProfile.length > 0) await syncToSupabase('perfis', myProfile);
 
       if (isOrganizer) {
-        // Organizer sincroniza tudo que é dele
         const myTournaments   = state.tournaments.filter(t => t.organizadorId === userId);
         const myTeams         = state.teams.filter(t => t.organizadorId === userId);
         const myMatches       = state.matches.filter(m => m.organizadorId === userId);
@@ -39,19 +36,17 @@ export function useSync(state: AppState) {
         const myNews          = state.news.filter(n => n.organizadorId === userId);
         const myAds           = state.ads.filter(a => a.organizadorId === userId);
 
-        await Promise.all([
-          myTournaments.length   > 0 && syncToSupabase('campeonatos',           myTournaments),
-          myTeams.length         > 0 && syncToSupabase('times',                 myTeams),
-          myMatches.length       > 0 && syncToSupabase('partidas',              myMatches),
-          myPlayers.length       > 0 && syncToSupabase('jogadores',             myPlayers),
-          myRegistrations.length > 0 && syncToSupabase('participantes',         myRegistrations),
-          myLeagues.length       > 0 && syncToSupabase('federacoes',            myLeagues),
-          myNews.length          > 0 && syncToSupabase('noticias',              myNews),
-          myAds.length           > 0 && syncToSupabase('anuncios',              myAds),
-        ]);
+        if (myTournaments.length   > 0) await syncToSupabase('campeonatos',   myTournaments);
+        if (myTeams.length         > 0) await syncToSupabase('times',         myTeams);
+        if (myMatches.length       > 0) await syncToSupabase('partidas',      myMatches);
+        if (myPlayers.length       > 0) await syncToSupabase('jogadores',     myPlayers);
+        if (myRegistrations.length > 0) await syncToSupabase('participantes', myRegistrations);
+        if (myLeagues.length       > 0) await syncToSupabase('federacoes',    myLeagues);
+        if (myNews.length          > 0) await syncToSupabase('noticias',      myNews);
+        if (myAds.length           > 0) await syncToSupabase('anuncios',      myAds);
       }
 
-      if (isManager) {
+      if (user.role === UserRole.TEAM_MANAGER) {
         const myTeam = state.teams.filter(t => t.ownerId === userId || t.managerId === userId);
         if (myTeam.length > 0) await syncToSupabase('times', myTeam);
       }

@@ -166,27 +166,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         try {
           const remoteData = await fetchAllFromSupabase();
           if (remoteData && Object.keys(remoteData).length > 0) {
-            // Supabase tem prioridade total — sobrescreve localStorage
             loaded = {
               ...local,
-              users:                    remoteData.users                   || local.users,
-              tournaments:              remoteData.tournaments             || local.tournaments,
-              teams:                    remoteData.teams                   || local.teams,
-              matches:                  remoteData.matches                 || local.matches,
-              players:                  remoteData.players                 || local.players,
-              playerProfiles:           remoteData.playerProfiles          || local.playerProfiles,
-              registrations:            remoteData.registrations           || local.registrations,
-              leagues:                  remoteData.leagues                 || local.leagues,
-              leagueInvitations:        remoteData.leagueInvitations       || local.leagueInvitations,
-              leagueMembers:            remoteData.leagueMembers           || local.leagueMembers,
-              news:                     remoteData.news                    || local.news,
-              ads:                      remoteData.ads                     || local.ads,
-              marketPlayers:            remoteData.marketPlayers           || local.marketPlayers,
-              propostas:                remoteData.propostas               || local.propostas,
-              historicoTransferencias:  remoteData.historicoTransferencias || local.historicoTransferencias,
-              negotiations:             remoteData.negotiations            || local.negotiations,
-              planUpgradeRequests:      remoteData.planUpgradeRequests     || local.planUpgradeRequests,
-              systemLogs:               remoteData.systemLogs              || local.systemLogs,
+              users:             remoteData.users             || local.users,
+              tournaments:       remoteData.tournaments       || local.tournaments,
+              teams:             remoteData.teams             || local.teams,
+              matches:           remoteData.matches           || local.matches,
+              players:           remoteData.players           || local.players,
+              playerProfiles:    remoteData.playerProfiles    || local.playerProfiles,
+              registrations:     remoteData.registrations     || local.registrations,
+              leagues:           remoteData.leagues           || local.leagues,
+              leagueInvitations: remoteData.leagueInvitations || local.leagueInvitations,
+              news:              remoteData.news              || local.news,
+              ads:               remoteData.ads               || local.ads,
             };
           }
         } catch (remoteErr) {
@@ -435,9 +427,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const filteredLeagues = useMemo(() =>
     state.leagues.filter(l =>
       (!currentOrganizerId || l.organizadorId === currentOrganizerId) &&
-      (!selectedLeagueId  || l.id === selectedLeagueId) &&
       (!globalExperience  || l.experienceType === globalExperience),
-    ), [state.leagues, currentOrganizerId, selectedLeagueId, globalExperience]);
+    ), [state.leagues, currentOrganizerId, globalExperience]);
 
   const filteredLeagueInvitations = useMemo(() =>
     state.leagueInvitations.filter(i =>
